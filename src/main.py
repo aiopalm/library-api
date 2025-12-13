@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from src.api import auth
+from src.api import auth, books
 
 app = FastAPI(
     title="Library API",
@@ -8,3 +8,4 @@ app = FastAPI(
 )
 
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
+app.include_router(books.router, prefix="/books", tags=["Books"])
