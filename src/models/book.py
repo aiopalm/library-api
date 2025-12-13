@@ -1,15 +1,18 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Integer, String
+from sqlalchemy.orm import Mapped, mapped_column
+
 from src.core.database import Base
+
 
 class Book(Base):
     __tablename__ = "books"
 
-    id = Column(Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
 
-    title = Column(String, nullable=False)
-    author = Column(String, nullable=False)
+    title: Mapped[str] = mapped_column(String, nullable=False)
+    author: Mapped[str] = mapped_column(String, nullable=False)
 
-    year = Column(Integer, nullable=False)
-    isbn = Column(String, unique=True, nullable=False, index=True)
+    year: Mapped[int] = mapped_column(Integer, nullable=False)
+    isbn: Mapped[str] = mapped_column(String, unique=True, nullable=False, index=True)
 
-    copies_available = Column(Integer, default=0, nullable=False)
+    copies_available: Mapped[int] = mapped_column(Integer, default=0, nullable=False)

@@ -1,10 +1,13 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Integer, String
+from sqlalchemy.orm import Mapped, mapped_column
+
 from src.core.database import Base
+
 
 class Reader(Base):
     __tablename__ = "readers"
 
-    id = Column(Integer, primary_key=True
-                )
-    name = Column(String, nullable=False)
-    email = Column(String, unique=True, nullable=False, index=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+
+    name: Mapped[str] = mapped_column(String, nullable=False)
+    email: Mapped[str] = mapped_column(String, unique=True, nullable=False, index=True)
