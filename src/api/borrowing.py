@@ -158,9 +158,9 @@ async def return_book(
     summary="Get all borrowing records"
 )
 async def get_all_borrowings(
-        skip: int = Query(0, ge=0, description="Number of records to skip"),
-        limit: int = Query(100, ge=1, le=100, description="Maximum number of records to return"),
-        active_only: bool = Query(False, description="Show only active (not returned) borrowings"),
+        skip: int = Query(0, ge=0),
+        limit: int = Query(100, ge=1, le=100),
+        active_only: bool = Query(False),
         db: AsyncSession = Depends(get_db),
         current_user: User = Depends(get_current_user)
 ):
