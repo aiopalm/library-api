@@ -6,11 +6,11 @@ from httpx import AsyncClient
 async def auth_headers(client: AsyncClient):
     await client.post(
         "/auth/register",
-        json={"email": "user@mail.ru", "password": "test-pass"}
+        json={"email": "libr@mail.ru", "password": "test-pass"}
     )
     response = await client.post(
         "/auth/login",
-        data={"username": "user@mail.ru", "password": "test-pass"}
+        json={"email": "libr@mail.ru", "password": "test-pass"}
     )
     token = response.json()["access_token"]
     return {"Authorization": f"Bearer {token}"}
@@ -21,8 +21,8 @@ async def setup_book_and_reader(client: AsyncClient, auth_headers):
     book_response = await client.post(
         "/books/",
         json={
-            "title": "Book",
-            "author": "Author",
+            "title": "Test Book",
+            "author": "Test Author",
             "year": 2024,
             "isbn": "978-3-16-148410-0",
             "copies_available": 3
@@ -32,7 +32,7 @@ async def setup_book_and_reader(client: AsyncClient, auth_headers):
 
     reader_response = await client.post(
         "/readers/",
-        json={"name": "Ivan", "email": "ivan@mail.ru"},
+        json={"name": "Artem", "email": "artem@mail.ru"},
         headers=auth_headers
     )
 
@@ -51,7 +51,7 @@ async def test_borrow_book(client: AsyncClient, auth_headers, setup_book_and_rea
         },
         headers=auth_headers
     )
-    assert response.status_code == 200
+    assert response.status_code == 201
     assert response.json()["return_date"] is None
 
 
@@ -78,7 +78,7 @@ async def test_cannot_borrow_without_copies(client: AsyncClient, auth_headers):
     book_response = await client.post(
         "/books/",
         json={
-            "title": "Book",
+            "title": "No Copies",
             "author": "Author",
             "year": 2024,
             "isbn": "978-3-16-148410-1",
@@ -89,7 +89,7 @@ async def test_cannot_borrow_without_copies(client: AsyncClient, auth_headers):
 
     reader_response = await client.post(
         "/readers/",
-        json={"name": "Grisha", "email": "grisha@mail.ru"},
+        json={"name": "Nikita", "email": "nikita@mail.ru"},
         headers=auth_headers
     )
 
@@ -107,7 +107,7 @@ async def test_cannot_borrow_without_copies(client: AsyncClient, auth_headers):
 async def test_limit_three_books(client: AsyncClient, auth_headers):
     reader_response = await client.post(
         "/readers/",
-        json={"name": "Artem", "email": "artem@mail.ru"},
+        json={"name": "Grisha", "email": "grisha@mail.ru"},
         headers=auth_headers
     )
     reader_id = reader_response.json()["id"]
@@ -116,7 +116,7 @@ async def test_limit_three_books(client: AsyncClient, auth_headers):
         book_response = await client.post(
             "/books/",
             json={
-                "title": f"{i}",
+                "title": f"Book {i}",
                 "author": "Author",
                 "year": 2024,
                 "isbn": f"978-3-16-14841-{i}",
@@ -135,7 +135,7 @@ async def test_limit_three_books(client: AsyncClient, auth_headers):
         )
 
         if i < 3:
-            assert response.status_code == 200
+            assert response.status_code == 201
         else:
             assert response.status_code == 400
 
@@ -213,7 +213,7 @@ async def test_get_reader_books(client: AsyncClient, auth_headers, setup_book_an
     )
 
     response = await client.get(
-        f"/borrowing/reader/{setup_book_and_reader['reader_id']}/books",
+        f"/borrowing/reader/{setup_book_and_reader['reader_id']}",
         headers=auth_headers
     )
     assert response.status_code == 200

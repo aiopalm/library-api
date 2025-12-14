@@ -6,11 +6,11 @@ from httpx import AsyncClient
 async def auth_headers(client: AsyncClient):
     await client.post(
         "/auth/register",
-        json={"email": "user@mail.ru", "password": "test-pass"}
+        json={"email": "libr@mail.ru", "password": "test-pass"}
     )
     response = await client.post(
         "/auth/login",
-        data={"username": "user@mail.ru", "password": "test-pass"}
+        json={"email": "libr@mail.ru", "password": "test-pass"}
     )
     token = response.json()["access_token"]
     return {"Authorization": f"Bearer {token}"}
@@ -20,8 +20,8 @@ async def test_create_book(client: AsyncClient, auth_headers):
     response = await client.post(
         "/books/",
         json={
-            "title": "Book",
-            "author": "Author",
+            "title": "Test Book",
+            "author": "Test Author",
             "year": 2024,
             "isbn": "978-3-16-148410-0",
             "copies_available": 5
@@ -29,15 +29,15 @@ async def test_create_book(client: AsyncClient, auth_headers):
         headers=auth_headers
     )
     assert response.status_code == 201
-    assert response.json()["title"] == "Book"
+    assert response.json()["title"] == "Test Book"
 
 
 async def test_create_book_without_auth(client: AsyncClient):
     response = await client.post(
         "/books/",
         json={
-            "title": "Book",
-            "author": "Author",
+            "title": "Test Book",
+            "author": "Test Author",
             "year": 2024,
             "isbn": "978-3-16-148410-0",
             "copies_available": 5
@@ -50,7 +50,7 @@ async def test_get_all_books(client: AsyncClient, auth_headers):
     await client.post(
         "/books/",
         json={
-            "title": "Book",
+            "title": "Book 1",
             "author": "Author",
             "year": 2024,
             "isbn": "978-3-16-148410-0",
